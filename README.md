@@ -10,7 +10,7 @@
 
 <br><br>
 
-<img width="80%" src="assets/github-header.png" alt="Snaps-OS header" />
+<img width="80%" src="assets/github-header2.png" alt="Snaps-OS header" />
 
 <br><br>
 
