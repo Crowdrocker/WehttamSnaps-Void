@@ -48,3 +48,11 @@ sudo xbps-install -S xorg-minimal
 sudo sv restart sddm
 ```
 
+## 5. PipeWire Shows Only `Dummy Output` (Duplicate WirePlumber Instances)
+**Cause:** `iNiR`'s installer configures Turnstile user `runit` services (`~/.config/service/pipewire`, `pipewire-pulse`, and `wireplumber`). Spawning a second `wireplumber` process via `/etc/xdg/autostart/` or `50-autostart.kdl` causes two instances to fight over ALSA devices, leaving only `Dummy Output`.
+**Fix:**
+1. Remove any duplicate `/etc/xdg/autostart/pipewire*.desktop` symlinks and manual `pipewire` / `wireplumber` lines in `50-autostart.kdl`.
+2. Restart Turnstile's supervised audio services cleanly:
+   ```bash
+   sv restart ~/.config/service/pipewire ~/.config/service/pipewire-pulse ~/.config/service/wireplumber
+   ```
