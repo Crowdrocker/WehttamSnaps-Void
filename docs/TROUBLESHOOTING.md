@@ -13,20 +13,18 @@
    turnstile-update-runit-env DISPLAY
    sv restart ~/.config/service/inir
    ```
-
 ## 2. PipeWire Fails with `unable to open lockfile '/run/user/1000/pipewire-0.lock'`
-**Cause:** `/run/user/1000` was not created prior to session start, or `pipewire` / `pipewire-pulse` / `wireplumber` were not autostarted under `runit`.
+**Cause:** `/run/user/1000` was not created prior to session start (or `elogind` / Turnstile had not initialized the runtime directory yet).
 **Fix:**
-```bash
-sudo mkdir -p /run/user/1000 && sudo chown USER:USER /run/user/1000 && sudo chmod 700 /run/user/1000
-```
-In Niri (`50-autostart.kdl`), start D-Bus environment and PipeWire **before** Turnstile restarts iNiR:
-```kdl
-spawn-at-startup "dbus-update-activation-environment" "--all"
-spawn-at-startup "pipewire"
-spawn-at-startup "pipewire-pulse"
-spawn-at-startup "wireplumber"
-```
+1. Create the runtime directory with strict user-only permissions (`700`):
+   ```bash
+   sudo mkdir -p /run/user/1000 && sudo chown USER:USER /run/user/1000 && sudo chmod 700 /run/user/1000
+   ```
+2. In Niri (`50-autostart.kdl`), export the D-Bus session environment so Turnstile's supervised PipeWire services (`~/.config/service/pipewire`, `pipewire-pulse`, and `wireplumber`) connect cleanly—do **not** manually spawn duplicate `pipewire` or `wireplumber` processes:
+   ```kdl
+   spawn-at-startup "dbus-update-activation-environment" "--all"
+   ```
+
 
 ## 3. Steam or Faugus Launcher Games Hang Silently in the Background
 **Causes & Fixes:**
