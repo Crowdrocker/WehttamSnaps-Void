@@ -1,0 +1,6 @@
+# Flathub Applications
+com.obsproject.Studio
+com.discordapp.Discord
+com.github.tchx84.Flatseal
+io.github.flattool.Warehouse
+com.vysp3r.ProtonPlus
