@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+
 # ==============================================================================
 #   ██╗    ██╗   ╭───╮   ███████╗   │  WehttamSnaps-Void (Matthew / Crowdrocker)
 #   ██║    ██║  ╭╯ ╱╲ ╰╮ ██╔════╝   │  Photography · Gaming · Content Creation
