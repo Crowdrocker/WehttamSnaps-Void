@@ -1,4 +1,3 @@
-cat << 'EOF' > "$VOID_REPO/install.sh"
 #!/usr/bin/env bash
 # ==============================================================================
 #   ██╗    ██╗   ╭───╮   ███████╗   │  WehttamSnaps-Void (Matthew / Crowdrocker)
@@ -169,10 +168,5 @@ git clone https://github.com ~/Documents/GitHub/WehttamSnaps-Void
 cd ~/Documents/GitHub/WehttamSnaps-Void
 ./install.sh
 ```
-EOF
-
-git add -A
-git commit -m "feat: initial bare-metal Void Linux (glibc + runit) workstation setup"
-git push -u origin main
 
  
