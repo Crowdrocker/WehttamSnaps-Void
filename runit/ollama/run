@@ -1,0 +1,4 @@
+#!/bin/sh
+export PATH="/usr/local/bin:/usr/bin:/bin"
+export OLLAMA_MODELS="/home/wehttamsnaps/.ollama/models"
+exec /usr/local/bin/ollama serve 2>&1

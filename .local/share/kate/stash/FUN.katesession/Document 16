@@ -1,0 +1,29 @@
+VOID_REPO="/home/wehttamsnaps/Documents/GitHub/WehttamSnaps-Void"
+mkdir -p "$VOID_REPO"/{runit/ollama,session,umbriel/.config,pipewire/.config,mangohud/.config,fastfetch/.config,jarvis-voice}
+cd "$VOID_REPO"
+
+# 1. Connect to GitHub remote & sync initial commit (LICENSE / .gitattributes)
+git init -b main
+git remote remove origin 2>/dev/null || true
+git remote add origin https://github.com
+git fetch origin
+git reset --soft origin/main
+git checkout origin/main -- LICENSE .gitattributes
+
+# 2. Copy your working live Void configs into GNU Stow & service folders
+cp -r ~/.config/umbriel "$VOID_REPO/umbriel/.config/"
+rm -rf "$VOID_REPO/umbriel/.config/umbriel/shaders/community"
+cp -r ~/.config/pipewire "$VOID_REPO/pipewire/.config/" 2>/dev/null || true
+cp -r ~/.config/MangoHud "$VOID_REPO/mangohud/.config/" 2>/dev/null || true
+cp -r ~/.config/fastfetch "$VOID_REPO/fastfetch/.config/" 2>/dev/null || true
+cp ~/jarvis-voice/*.py "$VOID_REPO/jarvis-voice/"
+cp /etc/sv/ollama/run "$VOID_REPO/runit/ollama/run" 2>/dev/null || true
+cp ~/.local/bin/start-umbriel-void "$VOID_REPO/session/" 2>/dev/null || true
+cp /usr/share/wayland-sessions/umbriel.desktop "$VOID_REPO/session/" 2>/dev/null || true
+
+# Exclude .venv and Python cache in jarvis-voice
+cat << 'EOF' > "$VOID_REPO/jarvis-voice/.gitignore"
+.venv/
+__pycache__/
+*.pyc
+EOF
