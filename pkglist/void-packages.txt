@@ -1,0 +1,75 @@
+# Repositories (install first)
+void-repo-multilib
+void-repo-multilib-nonfree
+void-repo-nonfree
+
+# Core System, Session & Networking
+dbus
+elogind
+rtkit
+NetworkManager
+network-manager-applet
+sddm
+xorg-minimal
+zramen
+ntfs-3g
+git
+stow
+curl
+wget
+jq
+
+# Minimal KDE Base & Portals (for session/Qt integration)
+plasma-desktop
+plasma-pa
+plasma-nm
+konsole
+dolphin
+kate
+xdg-desktop-portal-kde
+xdg-desktop-portal-gtk
+polkit-gnome
+octoxbps
+
+# Wayland Compositor & Utilities
+niri
+xwayland-satellite
+wl-clipboard
+cliphist
+grim
+slurp
+brightnessctl
+playerctl
+wlsunset
+udiskie
+blueman
+
+# PipeWire Audio Stack
+pipewire
+wireplumber
+alsa-pipewire
+pulseaudio-utils
+pavucontrol
+sof-firmware
+
+# AMD RDNA3 (RX 7600) & 32-bit Gaming Stack
+linux
+linux-firmware-amd
+mesa-dri
+mesa-dri-32bit
+vulkan-loader
+vulkan-loader-32bit
+mesa-vulkan-radeon
+mesa-vulkan-radeon-32bit
+Vulkan-Tools
+libgcc-32bit
+libstdc++-32bit
+libdrm-32bit
+libglvnd-32bit
+mesa-vaapi
+steam
+flatpak
+gamemode
+libgamemode-32bit
+MangoHud
+goverlay
