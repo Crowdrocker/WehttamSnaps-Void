@@ -67,7 +67,7 @@ profiles and supporting configs for audio, gaming, and creative work:
 
 ## 🛠️ Void Linux (`runit`) adaptations
 
-- The installer enables available `dbus`, `NetworkManager`, `sddm`, `zramen`, `seatd`, and Bluetooth services through runit.
+- The installer enables available `dbus`, `NetworkManager`, `sddm`, `zramen`, and Bluetooth services through runit. `elogind` is installed and D-Bus-activated; no separate `seatd` daemon is configured.
 - It installs multilib Mesa/Vulkan packages for gaming and adds the Flathub user remote.
 - The Niri and Umbriel configs are selectable; only the chosen profile is linked into `~/.config`.
 - Hardware-specific drive mounts, GPU pinning, and optional iNiR/J.A.R.V.I.S. downloads are intentionally left for separate setup.
@@ -136,10 +136,10 @@ sudo sv restart NetworkManager
 vulkaninfo | grep deviceName
 
 # Confirm the group changes took effect
-id | tr ' ' '\n' | grep -E 'seatd|video|render|audio'
+id | tr ' ' '\n' | grep -E 'video|render|audio|network'
 ```
 
-If the session won't start, check that its package installed, the session is listed under `/usr/share/wayland-sessions`, and `seatd`/`dbus` are running. Group changes take effect after a full logout or reboot.
+If the session won't start, check that its package installed, the session is listed under `/usr/share/wayland-sessions`, and `dbus` is running. Elogind is activated through D-Bus rather than a separate runit service. Group changes take effect after a full logout or reboot.
 
 ---
 

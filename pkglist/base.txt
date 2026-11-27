@@ -4,7 +4,6 @@ NetworkManager
 network-manager-applet
 dbus
 elogind
-seatd
 turnstile
 polkit-gnome
 rtkit
