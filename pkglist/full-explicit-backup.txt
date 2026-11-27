@@ -168,7 +168,6 @@ s-nail
 sassc
 satty
 sddm
-seatd
 slurp
 socat
 songrec

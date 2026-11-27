@@ -81,11 +81,12 @@ inspect `/usr/share/wayland-sessions`.
 - Installs packages from `pkglist/*.txt`, with only the chosen compositor
   selected from `pkglist/desktop-niri.txt` or
   `pkglist/desktop-umbriel.txt`.
-- Enables available `dbus`, `NetworkManager`, `sddm`, `zramen`, `seatd`, and
-  `bluetoothd` runit services. If `dhcpcd` or `wpa_supplicant` is enabled, it
+- Enables available `dbus`, `NetworkManager`, `sddm`, `zramen`, and
+  `bluetoothd` runit services. `elogind` is installed and activated through
+  D-Bus, not linked into `/var/service`. If `dhcpcd` or `wpa_supplicant` is enabled, it
   removes that service symlink because NetworkManager is configured.
-- Adds the user to the available `_seatd`, `video`, `render`, `audio`, and
-  `network` groups.
+- Adds the user to the available `video`, `render`, `audio`, and `network`
+  groups; there is no `seatd` group requirement.
 - Adds the Flathub user remote and installs the application IDs listed in
   `pkglist/flatpak.txt`.
 - Backs up existing profile/Fastfetch configs and links the repository versions.

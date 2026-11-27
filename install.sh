@@ -135,9 +135,10 @@ enable_service() {
 }
 
 printf '\n==> Enabling runit services\n'
-for service in dbus NetworkManager sddm zramen seatd bluetoothd; do
+for service in dbus NetworkManager sddm zramen bluetoothd; do
     enable_service "$service"
 done
+# elogind is installed with the base packages and activated by D-Bus.
 if [[ "$PROFILE" == "umbriel" && ! -f /usr/share/wayland-sessions/umbriel.desktop ]]; then
     sudo install -Dm644 "$REPO_DIR/session/umbriel.desktop" \
         /usr/share/wayland-sessions/umbriel.desktop
@@ -151,7 +152,7 @@ for service in dhcpcd wpa_supplicant; do
 done
 
 groups_to_add=()
-for group in _seatd video render audio network; do
+for group in video render audio network; do
     if getent group "$group" >/dev/null; then
         groups_to_add+=("$group")
     fi
