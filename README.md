@@ -39,12 +39,13 @@
 
 ## ✨ Overview
 
-A Void Linux configuration for the **Umbriel** Wayland compositor and the **iNiR** Quickshell shell, with:
+A Void Linux post-install setup with selectable **Umbriel** or **Niri** desktop
+profiles and supporting configs for audio, gaming, and creative work:
 
 | | |
 | :-- | :-- |
-| 🪟 **Umbriel + iNiR** | Wayland compositor with a Quickshell-based desktop shell |
-| 🔊 **PipeWire dual-PC audio** | Headset and HDMI capture card split for streaming |
+| 🪟 **Umbriel / Niri** | Selectable Wayland compositor profiles |
+| 🔊 **PipeWire** | Audio packages for desktop and streaming workflows |
 | 🎮 **Proton gaming** | Steam, Lutris, Gamemode, MangoHud, 32-bit Mesa/Vulkan ready |
 | 🤖 **J.A.R.V.I.S.** | Local voice control (Whisper, Piper, Ollama) |
 | 📸 **Creative apps** | Darktable, GIMP, Krita, Inkscape, Kdenlive, OBS |
@@ -66,25 +67,28 @@ A Void Linux configuration for the **Umbriel** Wayland compositor and the **iNiR
 
 ## 🛠️ Void Linux (`runit`) adaptations
 
-- **No systemd session or autostart.** `qs -c inir`, `awww-daemon`, `xwayland-satellite`, and `/usr/libexec/polkit-kde-authentication-agent-1` are launched directly from Umbriel's `[general] autostart` array inside `dbus-run-session`.
-- **Single-instance PipeWire/WirePlumber.** Managed through user `runsv`, with no duplicate spawners in `/etc/pipewire/pipewire.conf.d/`.
-- **Ollama as a `runit` service.** A custom `/etc/sv/ollama/run` exposes `/usr/local/bin/ollama` for local `qwen2.5:3b` intent routing.
-- **Flatpak and Proton multilib ready.** Ships with TrueType system fonts (`noto-fonts-ttf`, `dejavu-fonts-ttf`, `liberation-fonts-ttf`), `libglvnd-32bit`, `mesa-dri-32bit`, and a `/mnt` sandbox override for Steam out of the box.
+- The installer enables available `dbus`, `NetworkManager`, `sddm`, `zramen`, `seatd`, and Bluetooth services through runit.
+- It installs multilib Mesa/Vulkan packages for gaming and adds the Flathub user remote.
+- The Niri and Umbriel configs are selectable; only the chosen profile is linked into `~/.config`.
+- Hardware-specific drive mounts, GPU pinning, and optional iNiR/J.A.R.V.I.S. downloads are intentionally left for separate setup.
 
 ---
 
 ## 🚀 Quick deploy
 
 ```bash
-git clone https://github.com/Crowdrocker/WehttamSnaps-Void ~/Documents/GitHub/WehttamSnaps-Void
+mkdir -p ~/Documents/GitHub
+git clone https://github.com/Crowdrocker/WehttamSnaps-Void.git ~/Documents/GitHub/WehttamSnaps-Void
 cd ~/Documents/GitHub/WehttamSnaps-Void
-chmod +x install.sh && ./install.sh
+./install.sh
 ```
 
-After it finishes, **log out and back in** so the new groups (`_seatd`, `video`, `render`, `audio`) apply, then pick the **Umbriel** session in SDDM.
+The script asks whether to install the **Niri** or **Umbriel** profile. To choose without the prompt, use `./install.sh --profile niri` or `./install.sh --profile umbriel`. After it finishes, reboot and choose the matching session in SDDM.
 
 > [!WARNING]
-> The installer uses `sudo`, enables nonfree/multilib repos, builds software from source, and symlinks into `~/.config`. Existing configs are moved to `~/.config-backup-<timestamp>`, but read the script before running it on a machine you care about.
+> The installer uses `sudo`, enables nonfree/multilib repositories, updates the system, enables runit services, installs packages, and links configs. Existing matching configs are moved to `~/.config-backup-<timestamp>`. Review the package lists before running it.
+
+See the full [Void Linux post-install guide](docs/01-void-post-install.md) for first-boot steps and details.
 
 ---
 
@@ -92,13 +96,11 @@ After it finishes, **log out and back in** so the new groups (`_seatd`, `video`,
 
 | # | Step | Details |
 | :-: | :-- | :-- |
-| 1 | **Repositories** | Enables `nonfree`, `multilib`, and `multilib-nonfree`, then runs a full system update |
-| 2 | **Packages** | Toolchain, Wayland/Qt6 dev libraries, PipeWire, Mesa/Vulkan (64 + 32-bit), fonts, terminals, creative apps, and gaming tools |
-| 3 | **Services** | Links `dbus`, `seatd`, `NetworkManager` into `/var/service`; wires ALSA to PipeWire; installs Ollama and its `runit` service |
-| 4 | **Source builds** | Builds Umbriel (`just`/`meson`) and Quickshell (`cmake`/`ninja`) into `/usr/local`; installs `matugen` and `xwayland-satellite` via `cargo` |
-| 5 | **Fonts and Flatpak** | Installs Material Symbols (Rounded + Outlined), adds Flathub, installs OBS, Discord, Flatseal, and Warehouse |
-| 6 | **Dotfiles** | Backs up existing configs, then runs GNU Stow for `umbriel`, `pipewire`, `mangohud`, `fastfetch` |
-| 7 | **Session, iNiR, J.A.R.V.I.S.** | Installs the session wrapper and SDDM entry, clones iNiR and community shaders, sets up the voice venv and Piper voice, pulls `qwen2.5:3b` |
+| 1 | **Repositories** | Enables nonfree and multilib repositories and updates the system |
+| 2 | **Packages** | Installs common workstation, Wayland, audio, gaming, and creative packages, plus the selected Niri or Umbriel package |
+| 3 | **Services and groups** | Enables available runit services, switches enabled DHCP/WPA supplicants off when NetworkManager is configured, and adds available desktop groups |
+| 4 | **Flatpak** | Adds the Flathub user remote and installs IDs from `pkglist/flatpak.txt` |
+| 5 | **Configs** | Backs up existing matching config paths, then links the selected compositor config and Fastfetch |
 
 <details>
 <summary><b>Installed package groups</b></summary>
@@ -110,12 +112,12 @@ After it finishes, **log out and back in** so the new groups (`_seatd`, `video`,
 | **CLI** | git, stow, curl, wget, jq, ripgrep, fd, fzf, zoxide, bat, eza, btop, fastfetch |
 | **Build** | gcc, meson, ninja, cmake, just, cargo, rust, python3-devel |
 | **Wayland / Qt6** | wayland-devel, libxkbcommon, libinput, qt6-base/declarative/wayland/svg/multimedia, qt6ct, kvantum |
-| **Audio** | pipewire, wireplumber, alsa-pipewire, pavucontrol, qpwgraph, easyeffects, cava |
-| **Graphics** | mesa-dri, mesa-vulkan-radeon, vulkan-loader/tools (64 + 32-bit) |
-| **Desktop utils** | wl-clipboard, cliphist, grim, slurp, swaybg, swayidle, swaylock, brightnessctl, playerctl, wlsunset, ydotool |
-| **Shell / terminal** | ghostty, yazi, zsh, fish, starship |
-| **Creative** | darktable, gimp, krita, inkscape, kdenlive, exiftool, ImageMagick |
-| **Gaming** | steam, lutris, gamemode, MangoHud, goverlay, flatpak |
+| **Common workstation** | CLI tools, build tools, fonts, networking, and Qt/KDE support (`pkglist/base.txt`) |
+| **Wayland** | Desktop utilities and common compositor dependencies (`pkglist/wayland-desktop.txt`) |
+| **Audio** | PipeWire, WirePlumber, ALSA and Bluetooth audio (`pkglist/audio.txt`) |
+| **Creative** | Image/video editing, media and capture applications (`pkglist/creative-apps.txt`) |
+| **Gaming** | Steam, Lutris, GameMode, MangoHud, Mesa/Vulkan multilib (`pkglist/gaming.txt`) |
+| **Desktop profile** | Niri or Umbriel, selected separately (`pkglist/desktop-*.txt`) |
 
 </details>
 
@@ -127,8 +129,8 @@ After it finishes, **log out and back in** so the new groups (`_seatd`, `video`,
 # Check runit service state
 sudo sv status /var/service/*
 
-# Restart a service (example: Ollama)
-sudo sv restart ollama
+# Restart a service (example: NetworkManager)
+sudo sv restart NetworkManager
 
 # Verify the GPU is using RADV
 vulkaninfo | grep deviceName
@@ -137,7 +139,7 @@ vulkaninfo | grep deviceName
 id | tr ' ' '\n' | grep -E 'seatd|video|render|audio'
 ```
 
-If the session won't start, the usual suspects are a missing group (log out and back in), `seatd` not running, or a missing `~/.local/bin/start-umbriel-void`.
+If the session won't start, check that its package installed, the session is listed under `/usr/share/wayland-sessions`, and `seatd`/`dbus` are running. Group changes take effect after a full logout or reboot.
 
 ---
 
