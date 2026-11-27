@@ -30,7 +30,7 @@ fi
 
 # Trigger a custom miniature terminal tip popup on shell initialization (Optional)
 if [[ $- == *i* ]]; then
-    ~/.config/niri/scripts/tips.sh startup-mini
+    ~/.config/snapsos/tips/tips.sh startup-mini
 fi
 # ================================= prompt ================================= #
 # PS1='$(if [[ "$PWD" = "$HOME" ]]; then echo "\e[1;36m\e[1;0m"; elif [[ "$PWD" = "/" ]]; then echo " \e[1;0m"; elif [[ ! "$PWD" == "$HOME" ]]; then echo "\n\w"; fi)\n\e[1;32m❯\e[1;0m '
@@ -185,9 +185,28 @@ bind "set show-mode-in-prompt on"
 bind "set vi-cmd-mode-string "
 bind "set vi-ins-mode-string "
 
-
-# ================================= ble-attach ================================= #
-[[ ${BLE_VERSION-} ]] && ble-attach
-# source "$HOME/.cargo/env"
+# ================================= iNiR & Starship ================================= #
 export ffconfig="minimal"
 export LIBVIRT_DEFAULT_URI="qemu:///system"
+
+case $- in *i*)
+  if [ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]; then
+    /usr/bin/cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+  fi
+
+  # Initialize Starship BEFORE ble-attach so transient prompt works
+  if command -v starship >/dev/null 2>&1; then
+    eval "$(starship init bash)"
+  fi
+  ;;
+esac
+
+# iNiR launcher PATH
+case ":$PATH:" in
+  *:"$HOME/.local/bin":*) ;;
+  *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
+
+# ================================= ble-attach ================================= #
+# Keep this as the absolute last line in ~/.bashrc
+[[ ! ${BLE_VERSION-} ]] || ble-attach

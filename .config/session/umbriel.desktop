@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Umbriel
+Comment=A Wayland compositor designed for daily use
+Exec=start-umbriel
+Type=Application
+DesktopNames=umbriel

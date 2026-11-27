@@ -7,6 +7,35 @@ source ~/.bash/functions.sh
 # ---  Hardware: AM5 Build - Ryzen 5 9600X, XFX RX 7600 8GB, 16GB DDR5 RAM, 850W PSU
 #==============================================================================
 
+## ── VOID LINUX PACKAGE MANAGEMENT (XBPS) ── ##
+alias up='sudo xbps-install -Su'                     # Full system update
+alias in='sudo xbps-install -S'                      # Install package(s)
+alias un='sudo xbps-remove -R'                       # Remove package + unused deps
+alias search='xbps-query -Rs'                        # Search remote repos
+alias installed='xbps-query -l'                      # List all installed packages
+alias pkginfo='xbps-query -R'                        # View package details
+alias clean='sudo xbps-remove -Oo && sudo vkpurge rm all' # Clean cache, orphans & old kernels
+alias grubup='sudo update-grub'                      # Regenerate Void GRUB config
+
+## ── VOID LINUX SERVICE MANAGEMENT (RUNIT) ── ##
+alias svstat='sudo sv status /var/service/*'         # Check status of all enabled services
+alias svup='sudo sv up'                              # Start a service (e.g., svup ollama)
+alias svdown='sudo sv down'                          # Stop a service
+alias svrestart='sudo sv restart'                    # Restart a service
+# Enable/disable service helper functions:
+sven()   { sudo ln -s "/etc/sv/$1" /var/service/; }
+svdis()  { sudo rm "/var/service/$1"; }
+
+## ── SYSTEM & DOTFILES QUICK HOOKS ── ##
+alias src='source ~/.bashrc'                         # Fixed path from ~/.bash/.bashrc
+alias bashrc='nano ~/.bashrc'
+alias aliases='nano ~/.bash/alias.sh'
+alias ffconf='nano ~/.local/share/fastfetch/presets/minimal.jsonc'
+alias starconf='nano ~/.config/starship.toml'
+
+## ── PIPEWIRE AUDIO (VOID / NON-SYSTEMD FIX) ── ##
+alias audio-reset='pkill -x pipewire wireplumber; sleep 1; pipewire & sleep 0.5; wireplumber & sleep 1; ~/.config/niri/scripts/audio-routing.sh gaming'
+
 ## list ##
 alias ls='eza -T --level=1 --color=always --icons=always --group-directories-first'
 alias la='eza -a --icons=always --group-directories-first'

@@ -1,0 +1,16 @@
+[SNAPS-OS Tips]: Did you know? You can use 'update' or 'up' to run a full Void system upgrade with sudo xbps-install -Su
+[SNAPS-OS Tips]: Did you know? You can use 'ss' without arguments to fuzzy-search and install Void packages with fzf
+[SNAPS-OS Tips]: Did you know? You can use "xbps-query -Rs keyword" to search for a package in the Void repos
+[SNAPS-OS Tips]: Did you know? You can use "xbps-query -R package" to see detailed info about a remote Void package
+[SNAPS-OS Tips]: Did you know? You can use "xbps-query -m" to list all manually (explicitly) installed packages
+[SNAPS-OS Tips]: Did you know? You can use "xbps-query -O" to list orphaned packages no longer required
+[SNAPS-OS Tips]: Did you know? You can use "sudo xbps-remove -Ry package" to remove a package and its unused dependencies
+[SNAPS-OS Tips]: Did you know? You can use "clean" to purge orphaned packages, cache, and old kernels with vkpurge
+[SNAPS-OS Tips]: Did you know? You can use "xbps-query -f package" to list all files installed by a package
+[SNAPS-OS Tips]: Did you know? You can use "xbps-query -o /path/to/file" to find which Void package owns a file
+[SNAPS-OS Tips]: Did you know? You can use "xlocate filename" (from xtools) to search which package provides any file
+[SNAPS-OS Tips]: Did you know? You can use "svstat" to check the status of all enabled runit services
+[SNAPS-OS Tips]: Did you know? You can use "sven <service>" and "svdis <service>" to enable or disable runit services
+[SNAPS-OS Tips]: Did you know? You can use "sudo sv restart <service>" to restart a running runit service immediately
+[SNAPS-OS Tips]: Did you know? You can use "set-game" and "set-chill" to switch PipeWire virtual audio routing profiles
+[SNAPS-OS Tips]: Did you know? You can use "audio-reset" to cleanly restart PipeWire and WirePlumber on Void Linux

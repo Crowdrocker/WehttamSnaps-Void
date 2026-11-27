@@ -1,0 +1,1 @@
+/home/wehttamsnaps/.config/snapsos/tips/tips.sh

@@ -7,6 +7,24 @@ source ~/.zsh/functions.zsh
 # ---  Hardware: AM5 Build - Ryzen 5 9600X, XFX RX 7600 8GB, 16GB DDR5 RAM, 850W PSU
 #==============================================================================
 
+# ── WEHTTAMSNAPS - CORE NIRI SYSTEM ALIAS HOOKS ──
+alias set-game="~/.config/niri/scripts/audio-routing.sh gaming"
+alias set-chill="~/.config/niri/scripts/audio-routing.sh music_only"
+alias audio-graph="qpwgraph &"
+alias audio-reset="pkill -x pipewire wireplumber; sleep 1; pipewire & sleep 0.5; wireplumber & sleep 1; ~/.config/niri/scripts/audio-routing.sh gaming"
+
+# ── VOID LINUX & SNAPS-OS SHORTCUTS ──
+alias up="sudo xbps-install -Su"
+alias in="sudo xbps-install -S"
+alias un="sudo xbps-remove -R"
+alias search="xbps-query -Rs"
+alias clean="sudo xbps-remove -Oo && sudo vkpurge rm all"
+alias svstat="sudo sv status /var/service/*"
+alias projectdir="cat ~/.config/projectdir.state"
+alias tipme="~/.config/niri/scripts/tips.sh random"
+alias alltips="~/.config/niri/scripts/tips.sh list"
+
+
 ## list ##
 alias ls='eza -T --level=1 --color=always --icons=always --group-directories-first'
 alias la='eza -a --icons=always --group-directories-first'

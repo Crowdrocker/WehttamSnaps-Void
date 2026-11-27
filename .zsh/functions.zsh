@@ -291,27 +291,34 @@ function resources { fn_resources "$@"; }
 # internal: detect package manager (cached)
 _detect_pkg_manager() {
     [[ -n "$PKG_MANAGER" ]] && return
-    if (( $+commands[pacman] )); then
+    if command -v xbps-install &>/dev/null; then
+        export PKG_MANAGER="xbps"
+    elif command -v pacman &>/dev/null; then
         export PKG_MANAGER="pacman"
-        local aur="${commands[yay]:-${commands[paru]}}"
+        local aur
+        aur=$(command -v yay 2>/dev/null || command -v paru 2>/dev/null)
         export AUR_HELPER="${aur:-}"
-    elif (( $+commands[dnf] )); then
+    elif command -v dnf &>/dev/null; then
         export PKG_MANAGER="dnf"
-    elif (( $+commands[zypper] )); then
+    elif command -v zypper &>/dev/null; then
         export PKG_MANAGER="zypper"
-    elif (( $+commands[apt-get] )); then
+    elif command -v apt-get &>/dev/null; then
         export PKG_MANAGER="apt"
     else
         export PKG_MANAGER="unknown"
     fi
 }
 
-# check updates (improved fallback for Arch)
+# check updates (with Void xbps support)
 fn_check_updates() {
     _detect_pkg_manager
-    if [[ "$PKG_MANAGER" == "pacman" ]]; then
-        local ofc=0 aur=0
-        if (( $+commands[checkupdates] )); then
+    if [[ "$PKG_MANAGER" == "xbps" ]]; then
+        local upd
+        upd=$(xbps-install -Mun 2>/dev/null | wc -l)
+        printf "[ UPDATES ]\n:: You have \e[1;32m%d\e[0m Void updates available\n" "$upd"
+    elif [[ "$PKG_MANAGER" == "pacman" ]]; then
+        local ofc aur=0
+        if command -v checkupdates &>/dev/null; then
             ofc=$(checkupdates 2>/dev/null | wc -l)
         else
             ofc=$(pacman -Qu 2>/dev/null | wc -l)
@@ -334,17 +341,17 @@ fn_check_updates() {
         upd=$(apt list --upgradable 2>/dev/null | grep -c '\[upgradable from')
         printf "[ UPDATES ]\n:: You have \e[1;32m%d\e[0m updates available\n" "$upd"
     else
-        printf "\e[1;31m Unsupported package manager.\e[0m\n"
+        printf "\e[1;31m Unsupported package manager for now...\e[1;0m\n"
         return 1
     fi
 }
-unalias check_updates 2>/dev/null || true
-function check_updates { fn_check_updates "$@"; }
 
-# package updates
+# package updates (with Void xbps support)
 fn_update() {
     _detect_pkg_manager
-    if [[ "$PKG_MANAGER" == "pacman" ]]; then
+    if [[ "$PKG_MANAGER" == "xbps" ]]; then
+        sudo xbps-install -Su
+    elif [[ "$PKG_MANAGER" == "pacman" ]]; then
         if [[ -n "$AUR_HELPER" ]]; then
             "$AUR_HELPER" -Syyu --noconfirm
         else
@@ -357,19 +364,21 @@ fn_update() {
     elif [[ "$PKG_MANAGER" == "apt" ]]; then
         sudo apt update && sudo apt upgrade -y
     else
-        printf "\e[1;31m Unsupported package manager.\e[0m\n"
+        printf "\e[1;31m Unsupported package manager for now...\e[1;0m\n"
         return 1
     fi
 }
 
-# Install software (non-interactive, requires arguments)
+# Install software (requires arguments)
 fn_install() {
-    if (( $# == 0 )); then
+    if [[ $# -eq 0 ]]; then
         printf "Usage: fn_install <package...>\n"
         return 1
     fi
     _detect_pkg_manager
-    if [[ "$PKG_MANAGER" == "pacman" ]]; then
+    if [[ "$PKG_MANAGER" == "xbps" ]]; then
+        sudo xbps-install -Sy "$@"
+    elif [[ "$PKG_MANAGER" == "pacman" ]]; then
         if [[ -n "$AUR_HELPER" ]]; then
             "$AUR_HELPER" -S --noconfirm "$@"
         else
@@ -382,19 +391,21 @@ fn_install() {
     elif [[ "$PKG_MANAGER" == "apt" ]]; then
         sudo apt install -y "$@"
     else
-        printf "\e[1;31m Unsupported package manager.\e[0m\n"
+        printf "\e[1;31m Unsupported package manager for now...\e[1;0m\n"
         return 1
     fi
 }
 
-# package uninstall (non-interactive, requires arguments)
+# package uninstall (requires arguments)
 fn_uninstall() {
-    if (( $# == 0 )); then
+    if [[ $# -eq 0 ]]; then
         printf "Usage: fn_uninstall <package...>\n"
         return 1
     fi
     _detect_pkg_manager
-    if [[ "$PKG_MANAGER" == "pacman" ]]; then
+    if [[ "$PKG_MANAGER" == "xbps" ]]; then
+        sudo xbps-remove -Ry "$@"
+    elif [[ "$PKG_MANAGER" == "pacman" ]]; then
         if [[ -n "$AUR_HELPER" ]]; then
             "$AUR_HELPER" -Rns --noconfirm "$@"
         else
@@ -407,10 +418,11 @@ fn_uninstall() {
     elif [[ "$PKG_MANAGER" == "apt" ]]; then
         sudo apt remove -y "$@"
     else
-        printf "\e[1;31m Unsupported package manager.\e[0m\n"
+        printf "\e[1;31m Unsupported package manager for now...\e[1;0m\n"
         return 1
     fi
 }
+
 
 # compile cpp file with g++ (with sanity checks)
 fn_compile_cpp() {
@@ -595,7 +607,7 @@ fastfetch() {
 # Interactive fastfetch style switcher
 ffstyle() {
     local presetDir="$HOME/.local/share/fastfetch/presets"
-    local zsh_config="$HOME/.zsh/.zshrc"
+    local zsh_config="$HOME/.zshrc"
 
     # Check preset directory
     if [[ ! -d "$presetDir" ]]; then
@@ -674,8 +686,8 @@ ffstyle() {
 
 ffimg() {
     local preferredDir="$HOME/.local/share/fastfetch/images"
-    local zsh_config="$HOME/.zsh/.zshrc"
-    local config="$HOME/.local/share/fastfetch/presets/minimal.jsonc"
+    local zsh_config="$HOME/.zshrc"
+    local config="$HOME/.config/fastfetch/config.jsonc"
 
     # ------------------------------------------------------------
     # Check required paths
@@ -800,10 +812,20 @@ ffimg() {
     command fastfetch --config "$config"
 }
 
-# Software search (Arch: interactive install via fzf; others: simple search)
+# Software search (Arch & Void: interactive install via fzf; others: simple search)
 ss() {
-    if (( $+commands[pacman] )); then
-        local aur="${commands[yay]:-${commands[paru]}}"
+    if command -v xbps-query &>/dev/null; then
+        if command -v fzf &>/dev/null; then
+            xbps-query -Rs '' | awk '{print $2}' | sed 's/-[0-9].*//' | sort -u | \
+                fzf --multi --prompt="Void XBPS > " --preview "xbps-query -R {1}" --preview-window=down:75% | \
+                xargs -ro sudo xbps-install -Sy
+        else
+            [[ -z "$1" ]] && { printf "Usage: ss <package_name>\n"; return 1; }
+            xbps-query -Rs "$1"
+        fi
+    elif command -v pacman &>/dev/null; then
+        local aur
+        aur=$(command -v yay 2>/dev/null || command -v paru 2>/dev/null)
         if [[ -n "$aur" ]]; then
             "$aur" -Slq | fzf --multi --preview "$aur -Sii {1}" --preview-window=down:75% | xargs -ro "$aur" -S --noconfirm
         else
@@ -811,17 +833,18 @@ ss() {
             return 1
         fi
     else
-        # Non-Arch: simple search (requires package name)
+        # Others: simple search (requires package name)
         if [[ -z "$1" ]]; then
             printf "Usage: ss <package_name>\n"
             return 1
         fi
-        local pkg="${commands[apt]:-${commands[dnf]:-${commands[zypper]}}}"
+        local pkg
+        pkg=$(command -v apt 2>/dev/null || command -v dnf 2>/dev/null || command -v zypper 2>/dev/null)
         if [[ -n "$pkg" ]]; then
-            case "${pkg:t}" in
-                apt) apt search "$1" ;;
-                dnf) dnf search "$1" ;;
-                zypper) zypper search "$1" ;;
+            case "$pkg" in
+                *apt) apt search "$1" ;;
+                *dnf) dnf search "$1" ;;
+                *zypper) zypper search "$1" ;;
             esac
         else
             printf "!! Unsupported package manager.\n"
@@ -829,6 +852,7 @@ ss() {
         fi
     fi
 }
+
 
 # Launch a GUI application detached from the terminal
 runfree() {

@@ -1,7 +1,0 @@
-# iNiR Settings writes this file: what you change in Settings lands here and loads last.
-# Your own additions go in 90-user-extra.toml; a key set in both follows Settings.
-
-[appearance.blur]
-radius = 1
-
-

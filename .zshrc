@@ -72,7 +72,7 @@ zinit cdreplay -q
 ############################################
 # Add in Starship
 ############################################
-export STARSHIP_CONFIG="$HOME/.zsh/starship/starship-simple.toml"
+export STARSHIP_CONFIG="$HOME/.zsh/starship/starship-ws.toml"
 eval "$(starship init zsh)"
 
 

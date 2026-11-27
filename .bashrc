@@ -185,33 +185,29 @@ bind "set show-mode-in-prompt on"
 bind "set vi-cmd-mode-string "
 bind "set vi-ins-mode-string "
 
-
-# ================================= ble-attach ================================= #
-[[ ${BLE_VERSION-} ]] && ble-attach
-# source "$HOME/.cargo/env"
+# ================================= iNiR & Starship ================================= #
 export ffconfig="minimal"
 export LIBVIRT_DEFAULT_URI="qemu:///system"
 
-# iNiR environment
-# Terminal colors (Material You from the wallpaper) and the prompt only where someone types: ssh commands, scp and
-# scripts that read this file get clean output
 case $- in *i*)
   if [ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]; then
     /usr/bin/cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
   fi
 
-  # Starship prompt (fish is wired via config.fish; bash needs its own init)
+  # Initialize Starship BEFORE ble-attach so transient prompt works
   if command -v starship >/dev/null 2>&1; then
     eval "$(starship init bash)"
   fi
   ;;
 esac
-# end iNiR
 
 # iNiR launcher PATH
 case ":$PATH:" in
-  *:"/home/wehttamsnaps/.local/bin":*) ;;
-  *) export PATH="/home/wehttamsnaps/.local/bin:$PATH" ;;
+  *:"$HOME/.local/bin":*) ;;
+  *) export PATH="$HOME/.local/bin:$PATH" ;;
 esac
-# end iNiR launcher PATH
-source -- ~/.local/share/blesh/ble.sh
+
+# ================================= ble-attach ================================= #
+# Keep this as the absolute last line in ~/.bashrc
+[[ ! ${BLE_VERSION-} ]] || ble-attach
+. "$HOME/.cargo/env"

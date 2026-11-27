@@ -1,5 +1,0 @@
-#!/bin/sh
-export PATH="/usr/local/bin:/usr/bin:/bin"
-export HOME="/home/wehttamsnaps"
-export OLLAMA_MODELS="/home/wehttamsnaps/.ollama/models"
-exec chpst -u wehttamsnaps:wehttamsnaps /usr/local/bin/ollama serve 2>&1
